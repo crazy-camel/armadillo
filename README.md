@@ -22,11 +22,11 @@ a platform can be valuable to many people/business;
 
 * Easy to install and extend
   * CMS's should not get in the way for people to install and extend with new features.
-  Things should just work and the setup fast and simple
+  Things should just work and the setup fast and simple.
 * Simple to scale
-  * Web Servers are growing a fast and cheap rate, so things like IO and Memory are now not as limiting as can
-  be scaled with simply clicks of buttons. This CMS should be easy to scale and have simple formulas to ensure
-  proper functioning
+  * Web Servers are growing at a fast and cheap rate, so things like IO and Memory are now not as limiting and can
+  be scaled with simple button clicks. This CMS should be easy to scale and have simple formulas to ensure
+  proper functioning.
 * Minimal memory management
   * The internet main protocols are still stateless by design so CMS should focus on fast and stable IO processes
   and fire and forget type of functional design.
