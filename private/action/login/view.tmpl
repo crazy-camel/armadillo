@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Login</title>
-	<link rel="stylesheet" href="css/style.css">
+	<title>Login - <TMPL_VAR NAME="sitename"></title>
+	<TMPL_INCLUDE NAME="header.tmpl">
 </head>
 <body>
-	<main>
+	<header role="banner" id="header" class="">
+		
+	</header>
+	<main role="main" property="mainContentOfPage">
 		<form action="action/login" method="post" accept-charset="utf-8">
 			<input type="text" name="username">
 			<input type="password" name="password">
 		</form>
 	</main>
+	<footer>
+		
+	</footer>
 </body>
 </html>

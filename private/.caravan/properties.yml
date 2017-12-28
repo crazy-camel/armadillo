@@ -1,7 +1,0 @@
- ---
-    home: /
-    section:
-      one: two
-      three: four
-      Foo: Bar
-      empty: ~

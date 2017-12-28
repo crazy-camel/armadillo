@@ -312,9 +312,10 @@ AddDefaultCharset utf-8
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ - [env=proto:http]
 
-    RewriteRule ^ - [env=CARAVAN_ROOT:%{DOCUMENT_ROOT}/.caravan]
-    RewriteRule ^ - [env=HTML_TEMPLATE_ROOT:%{DOCUMENT_ROOT}/.caravan/views]
-    RewriteRule ^ - [env=CARAVAN_PERLLIB:%{DOCUMENT_ROOT}/../cgi-lib]
+    RewriteRule ^ - [env=ARMADILLO_ROOT:%{DOCUMENT_ROOT}/.armadillo]
+    RewriteRule ^ - [env=HTML_TEMPLATE_ROOT:%{DOCUMENT_ROOT}/.armadillo/views]
+    RewriteRule ^ - [env=ARMADILLO_PERLLIB:%{DOCUMENT_ROOT}/../cgi-lib]
+    #####ARMADILLOPLACEHOLDER#######
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -455,7 +456,7 @@ AddDefaultCharset utf-8
 
 </FilesMatch>
 
-<FilesMatch "^\..*$">
+<FilesMatch "^\.armadillo$">
 
     # Apache < 2.3
     <IfModule !mod_authz_core.c>

@@ -5,28 +5,51 @@ use strict;
 use warnings FATAL => 'all';
 
 use Env;
-use lib $CARAVAN_PERLLIB;
-use Caravan::Application;
+use lib $ARMADILLO_PERLLIB;
+use Armadillo::Application;
+use Path::Tiny;
 
-my $caravan = Caravan::Application->new();
+my $armadillo = Armadillo::Application->new();
 
-if ( defined $ENV{CARAVAN_INSTALLED} )
+if ( defined $ENV{ARMADILLO_INSTALLED} )
 {
-	print $caravan->redirect( "home" );
+	print $armadillo->redirect( "home" );
 	exit(0);
 }
 
-my $query = $caravan->query;
-my $parameters = {
-	caravan_root => $CARAVAN_ROOT 
-};
+my $query = $armadillo->query;
 
+# ================================================== -->
+# Step 1 - Clear out the Database
+# ================================================== -->
+
+unlink( $ARMADILLO_ROOT . "/database.sqlite" );
+path( $ARMADILLO_ROOT . "/database.sqlite"  )->spew();
+
+# ================================================== -->
+# Step 2 - Create the base tables
+# ================================================== -->
 print $query->header();
-print $caravan->render(
+
+foreach my $migration ( path( $ARMADILLO_ROOT .  "/migrations/install"  )->children( qr/\.sql$/ ) )
+{
+	print $migration;
+}
+
+
+
+
+print $armadillo->render(
 	template => 'view.tmpl',
-	parameters => $parameters
 	);
 
-print $caravan->setEnviromentVariable( 'CARAVAN_INSTALLED', 1 );
+#print $armadillo->setEnviromentVariable( 'ARAMADILLO_INSTALLED', 1 );
 
-# Lets clean up the files once we are done
+# ================================================== -->
+# Functions
+# ================================================== -->
+
+sub getMigrations 
+{
+	return 
+}
