@@ -1,5 +1,3 @@
-
-
 # Apache Server Configs v2.15.0 | MIT License
 # https://github.com/h5bp/server-configs-apache
 
@@ -57,24 +55,6 @@
     </FilesMatch>
 </IfModule>
 
-# ----------------------------------------------------------------------
-# | Cross-origin resource timing                                       |
-# ----------------------------------------------------------------------
-
-# Allow cross-origin access to the timing information for all resources.
-#
-# If a resource isn't served with a `Timing-Allow-Origin` header that
-# would allow its timing information to be shared with the document,
-# some of the attributes of the `PerformanceResourceTiming` object will
-# be set to zero.
-#
-# https://www.w3.org/TR/resource-timing/
-# http://www.stevesouders.com/blog/2014/08/21/resource-timing-practical-tips/
-
-# <IfModule mod_headers.c>
-#     Header set Timing-Allow-Origin: "*"
-# </IfModule>
-
 
 # ######################################################################
 # # ERRORS                                                             #
@@ -102,11 +82,47 @@ ErrorDocument 404 /404.html
 
 Options -MultiViews
 
+# ----------------------------------------------------------------------
+# | Default Indexes                                                    |
+# ----------------------------------------------------------------------
+
+DirectoryIndex index.html index.cgi index.php
+
+
 # ######################################################################
-# # Directory Indexes                                                  #
+# # INTERNET EXPLORER                                                  #
 # ######################################################################
 
-DirectoryIndex index.html index.htm index.php index.pl index.cgi
+# ----------------------------------------------------------------------
+# | Document modes                                                     |
+# ----------------------------------------------------------------------
+
+# Force Internet Explorer 8/9/10 to render pages in the highest mode
+# available in the various cases when it may not.
+#
+# https://hsivonen.fi/doctype/#ie8
+#
+# (!) Starting with Internet Explorer 11, document modes are deprecated.
+# If your business still relies on older web apps and services that were
+# designed for older versions of Internet Explorer, you might want to
+# consider enabling `Enterprise Mode` throughout your company.
+#
+# https://msdn.microsoft.com/en-us/library/ie/bg182625.aspx#docmode
+# https://blogs.msdn.microsoft.com/ie/2014/04/02/stay-up-to-date-with-enterprise-mode-for-internet-explorer-11/
+
+<IfModule mod_headers.c>
+
+    Header set X-UA-Compatible "IE=edge"
+
+    # `mod_headers` cannot match based on the content-type, however,
+    # the `X-UA-Compatible` response header should be send only for
+    # HTML documents and not for the other resources.
+
+    <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ic[os]|jpe?g|m?js|json(ld)?|m4[av]|manifest|map|markdown|md|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
+        Header unset X-UA-Compatible
+    </FilesMatch>
+
+</IfModule>
 
 # ######################################################################
 # # MEDIA TYPES AND CHARACTER ENCODINGS                                #
@@ -296,6 +312,9 @@ AddDefaultCharset utf-8
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ - [env=proto:http]
 
+    RewriteRule ^ - [env=CARAVAN_ROOT:%{DOCUMENT_ROOT}/.caravan]
+    RewriteRule ^ - [env=HTML_TEMPLATE_ROOT:%{DOCUMENT_ROOT}/.caravan/views]
+    RewriteRule ^ - [env=CARAVAN_PERLLIB:%{DOCUMENT_ROOT}/../cgi-lib]
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -365,44 +384,6 @@ AddDefaultCharset utf-8
 #     RewriteRule ^ %{ENV:PROTO}://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 # </IfModule>
 
-
-
-
-# ----------------------------------------------------------------------
-# | Content Security Policy (CSP)                                      |
-# ----------------------------------------------------------------------
-
-# Mitigate the risk of cross-site scripting and other content-injection
-# attacks.
-#
-# This can be done by setting a `Content Security Policy` which
-# whitelists trusted sources of content for your website.
-#
-# The example header below allows ONLY scripts that are loaded from
-# the current website's origin (no inline scripts, no CDN, etc).
-# That almost certainly won't work as-is for your website!
-#
-# To make things easier, you can use an online CSP header generator
-# such as: http://cspisawesome.com/.
-#
-# https://content-security-policy.com/
-# https://www.html5rocks.com/en/tutorials/security/content-security-policy/
-# https://w3c.github.io/webappsec-csp/
-
-# <IfModule mod_headers.c>
-
-#     Header set Content-Security-Policy "script-src 'self'; object-src 'self'"
-
-#     # `mod_headers` cannot match based on the content-type, however,
-#     # the `Content-Security-Policy` response header should be send
-#     # only for HTML documents and not for the other resources.
-
-#     <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ic[os]|jpe?g|m?js|json(ld)?|m4[av]|manifest|map|markdown|md|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
-#         Header unset Content-Security-Policy
-#     </FilesMatch>
-
-# </IfModule>
-
 # ----------------------------------------------------------------------
 # | File access                                                        |
 # ----------------------------------------------------------------------
@@ -458,7 +439,23 @@ AddDefaultCharset utf-8
 # include: configuration files, files that contain metadata about the
 # project (e.g.: project dependencies), build scripts, etc..
 
-<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|orig|psd|sh|sql|sw[op])|~)$">
+<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|orig|psd|tmpl|sh|sql|sw[op])|~)$">
+
+    # Apache < 2.3
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+        Satisfy All
+    </IfModule>
+
+    # Apache ≥ 2.3
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+
+</FilesMatch>
+
+<FilesMatch "^\..*$">
 
     # Apache < 2.3
     <IfModule !mod_authz_core.c>
@@ -520,56 +517,6 @@ AddDefaultCharset utf-8
     Header set X-Content-Type-Options "nosniff"
 </IfModule>
 
-# ----------------------------------------------------------------------
-# | Reflected Cross-Site Scripting (XSS) attacks                       |
-# ----------------------------------------------------------------------
-
-# (1) Try to re-enable the cross-site scripting (XSS) filter built
-#     into most web browsers.
-#
-#     The filter is usually enabled by default, but in some cases it
-#     may be disabled by the user. However, in Internet Explorer for
-#     example, it can be re-enabled just by sending the
-#     `X-XSS-Protection` header with the value of `1`.
-#
-# (2) Prevent web browsers from rendering the web page if a potential
-#     reflected (a.k.a non-persistent) XSS attack is detected by the
-#     filter.
-#
-#     By default, if the filter is enabled and browsers detect a
-#     reflected XSS attack, they will attempt to block the attack
-#     by making the smallest possible modifications to the returned
-#     web page.
-#
-#     Unfortunately, in some browsers (e.g.: Internet Explorer),
-#     this default behavior may allow the XSS filter to be exploited,
-#     thereby, it's better to inform browsers to prevent the rendering
-#     of the page altogether, instead of attempting to modify it.
-#
-#     https://hackademix.net/2009/11/21/ies-xss-filter-creates-xss-vulnerabilities
-#
-# (!) Do not rely on the XSS filter to prevent XSS attacks! Ensure that
-#     you are taking all possible measures to prevent XSS attacks, the
-#     most obvious being: validating and sanitizing your website's inputs.
-#
-# https://blogs.msdn.microsoft.com/ie/2008/07/02/ie8-security-part-iv-the-xss-filter/
-# https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter/
-# https://www.owasp.org/index.php/Cross-site_Scripting_%28XSS%29
-
-# <IfModule mod_headers.c>
-
-#     #                           (1)    (2)
-#     Header set X-XSS-Protection "1; mode=block"
-
-#     # `mod_headers` cannot match based on the content-type, however,
-#     # the `X-XSS-Protection` response header should be send only for
-#     # HTML documents and not for the other resources.
-
-#     <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ic[os]|jpe?g|m?js|json(ld)?|m4[av]|manifest|map|markdown|md|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
-#         Header unset X-XSS-Protection
-#     </FilesMatch>
-
-# </IfModule>
 
 # ----------------------------------------------------------------------
 # | Server-side technology information                                 |
@@ -732,9 +679,9 @@ ServerSignature Off
 #
 # https://developers.google.com/speed/pagespeed/module/configuration#notransform
 
-# <IfModule mod_headers.c>
-#     Header merge Cache-Control "no-transform"
-# </IfModule>
+<IfModule mod_headers.c>
+     Header merge Cache-Control "no-transform"
+</IfModule>
 
 # ----------------------------------------------------------------------
 # | ETags                                                              |
@@ -864,53 +811,3 @@ FileETag None
     ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
 
 </IfModule>
-
-# ----------------------------------------------------------------------
-# | File concatenation                                                 |
-# ----------------------------------------------------------------------
-
-# Allow concatenation from within specific files.
-#
-# e.g.:
-#
-#   If you have the following lines in a file called, for
-#   example, `main.combined.js`:
-#
-#       <!--#include file="js/jquery.js" -->
-#       <!--#include file="js/jquery.timer.js" -->
-#
-#   Apache will replace those lines with the content of the
-#   specified files.
-
-# <IfModule mod_include.c>
-#     <FilesMatch "\.combined\.js$">
-#         Options +Includes
-#         AddOutputFilterByType INCLUDES application/javascript \
-#                                        application/x-javascript \
-#                                        text/javascript
-#         SetOutputFilter INCLUDES
-#     </FilesMatch>
-#     <FilesMatch "\.combined\.css$">
-#         Options +Includes
-#         AddOutputFilterByType INCLUDES text/css
-#         SetOutputFilter INCLUDES
-#     </FilesMatch>
-# </IfModule>
-
-# ----------------------------------------------------------------------
-# | Filename-based cache busting                                       |
-# ----------------------------------------------------------------------
-
-# If you're not using a build process to manage your filename version
-# revving, you might want to consider enabling the following directives
-# to route all requests such as `/style.12345.css` to `/style.css`.
-#
-# To understand why this is important and even a better solution than
-# using something like `*.css?v231`, please see:
-# http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/
-
-# <IfModule mod_rewrite.c>
-#     RewriteEngine On
-#     RewriteCond %{REQUEST_FILENAME} !-f
-#     RewriteRule ^(.+)\.(\d+)\.(bmp|css|cur|gif|ico|jpe?g|m?js|png|svgz?|webp|webmanifest)$ $1.$3 [L]
-# </IfModule>
