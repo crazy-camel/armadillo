@@ -9,6 +9,7 @@ use lib $ARMADILLO_PERLLIB;
 use Armadillo::Application;
 use Path::Tiny;
 
+
 my $armadillo = Armadillo::Application->new();
 
 if ( defined $ENV{ARMADILLO_INSTALLED} )
@@ -26,6 +27,8 @@ my $query = $armadillo->query;
 unlink( $ARMADILLO_ROOT . "/database.sqlite" );
 path( $ARMADILLO_ROOT . "/database.sqlite"  )->spew();
 
+my $dbh = $armadillo->load('database');
+
 # ================================================== -->
 # Step 2 - Create the base tables
 # ================================================== -->
@@ -33,23 +36,8 @@ print $query->header();
 
 foreach my $migration ( path( $ARMADILLO_ROOT .  "/migrations/install"  )->children( qr/\.sql$/ ) )
 {
-	print $migration;
+	my @sql = path( $migration )->lines();
+	$dbh->do( $_ ) for ( @sql );
 }
 
-
-
-
-print $armadillo->render(
-	template => 'view.tmpl',
-	);
-
-#print $armadillo->setEnviromentVariable( 'ARAMADILLO_INSTALLED', 1 );
-
-# ================================================== -->
-# Functions
-# ================================================== -->
-
-sub getMigrations 
-{
-	return 
-}
+print $armadillo->render( template => 'view.tmpl' );
