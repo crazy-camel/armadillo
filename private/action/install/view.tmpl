@@ -5,7 +5,42 @@
 	  <TMPL_INCLUDE NAME="header.tmpl">
 </head>
 <body>
-	<h1>Install Page</h1>
-	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Debitis iusto ullam non cum doloremque atque similique et quas ea aliquam perspiciatis inventore totam accusantium fugit quaerat aspernatur, impedit vitae, deserunt.<p>
+	<main class="container">
+		<h1>Welcome to Armadillo</h1>
+		<p>Armadillo is a flexiable and old school simplified CMS that makes your website both predicatable and easy to extend with little to no interference from the managing the content.</p>
+		<h2>Step 1 : Tell us a bit about yourself</h2>
+		<p>Being the first user we are going to assume that you will be the admin user. So please take a moment tell us about yourself so that Armadillo can remember you.</p>
+		
+		<form action="/action/install/createadmin" method="post" enctype="multipart/form-data">
+		  <div class="field">
+		    <label for="name">Name</label>
+		    <input type="text" name="name"  id="name" placeholder="Enter Email">
+		  </div>
+		  <div class="field">
+		    <label for="email">Email</label>
+		    <input type="email" name="email" id="email" placeholder="Enter Email">
+		  </div>
+		  <div class="field">
+		    <label for="passwrd">Password</label>
+		    <input type="password" name="passwrd" id="passwrd" placeholder="Enter Password">
+		  </div>
+		  <div class="field">
+		    <label for="confirm">Password</label>
+		    <input type="password" name="confirm" id="confirm" placeholder="Enter Password">
+		  </div>
+		  <div class="field">
+		    <label class="control checkbox">
+		      <input type="checkbox" name="checkbox" checked="true">
+		      <span class="control-indicator"></span>
+		      <span class="control-label">I agree to checking this checkbox</span>
+		    </label>
+		  </div>
+		  <div class="field">
+		    <button type="submit" class="button">Submit</button>
+		    <button type="reset" class="button">Reset</button>
+		  </div>
+		</form>
+	</main>
+	
 </body>
 </html>

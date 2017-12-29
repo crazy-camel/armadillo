@@ -6,7 +6,7 @@ use YAML::Tiny;
 use Path::Tiny;
 
 use HTML::Template;
-use CGI;
+use CGI '-utf8';
 #use CGI::Session::SQLite;
 use Data::Dumper;
 use DBI;
@@ -18,7 +18,7 @@ sub new {
    my $class = shift;
    my $self  = $class->SUPER::new( @_ );
    # parameters
-   $self->{query} = CGI->new();
+   $self->{query} = CGI->new;
    # properties
    $self->{properties} = YAML::Tiny->new( $ARMADILLO_ROOT . "/properties.yml" );
    # database load

@@ -87,8 +87,8 @@ Options -MultiViews
 # | Default Indexes                                                    |
 # ----------------------------------------------------------------------
 
-DirectoryIndex index.html index.cgi index.php
-
+#DirectoryIndex index.html index.cgi index.php
+DirectoryIndex disabled
 
 # ######################################################################
 # # INTERNET EXPLORER                                                  #
@@ -312,6 +312,12 @@ AddDefaultCharset utf-8
     RewriteRule ^ - [env=proto:https]
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ - [env=proto:http]
+
+    
+
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteCond %{REQUEST_FILENAME} /$
+    RewriteRule ^(.*)$ $1index.cgi  [L,QSA]
 
     RewriteRule ^ - [env=ARMADILLO_ROOT:%{DOCUMENT_ROOT}/.armadillo]
     RewriteRule ^ - [env=HTML_TEMPLATE_ROOT:%{DOCUMENT_ROOT}/.armadillo/views]
