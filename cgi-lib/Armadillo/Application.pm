@@ -57,7 +57,6 @@ sub render
   {
   	$template->param( $args->{parameters} );
   }
-  
   return $template->output();
 }
 
