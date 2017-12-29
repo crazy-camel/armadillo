@@ -1,0 +1,1 @@
+CREATE TABLE related ( page VARCHAR(255) NOT NULL,  related VARCHAR(255) NOT NULL );
