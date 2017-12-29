@@ -9,7 +9,6 @@ use lib $ARMADILLO_PERLLIB;
 use Armadillo::Application;
 use Path::Tiny;
 
-
 my $armadillo = Armadillo::Application->new();
 
 if ( defined $ENV{ARMADILLO_INSTALLED} )
@@ -21,7 +20,5 @@ if ( defined $ENV{ARMADILLO_INSTALLED} )
 # ================================================== -->
 # Welcome User
 # ================================================== -->
-print $armadillo->query->header();
+print $armadillo->query->header( -charset => 'utf-8' );
 print $armadillo->render( template => 'view.tmpl' );
-use Data::Dumper;
-print Dumper( $armadillo );

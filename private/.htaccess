@@ -316,7 +316,6 @@ AddDefaultCharset utf-8
     
 
     RewriteCond %{REQUEST_FILENAME} -d
-    RewriteCond %{REQUEST_FILENAME} /$
     RewriteRule ^(.*)$ $1index.cgi  [L,QSA]
 
     RewriteRule ^ - [env=ARMADILLO_ROOT:%{DOCUMENT_ROOT}/.armadillo]

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hello  <TMPL_VAR NAME="name"></title>
+	  <TMPL_INCLUDE NAME="header.tmpl">
+</head>
+<body>
+	<main class="container">
+		<h1>About the website<TMPL_VAR NAME="name"></h1>
+		<p>This is the part where you tell us things that Armadillo needs to remember about the site.</p>
+		<form action="/action/install/complete" method="post" accept-charset="utf-8">
+			<fieldset>
+  				<legend>General</legend>
+  				<div class="field">
+			    	<label for="sitename">Site name</label>
+			    	<input type="text" name="sitename"  id="sitename" placeholder="Enter the site's name">
+			    </div>
+			    <div class="field">
+			    	<label for="tagline">Site tagline</label>
+			    	<input type="text" name="tagline"  id="tagline" placeholder="Enter a small tagline for your site">
+			    </div>
+			</fieldset>
+			<fieldset>
+  				<legend>Metadata</legend>
+  				<div class="field">
+			    	<label for="description">Description</label>
+			    	<input type="text" name="description"  id="description" placeholder="Enter the default description for your site">
+			    </div>
+			    <label class="control checkbox">
+			      <input type="checkbox" name="checkbox" checked="true">
+			      <span class="control-indicator"></span>
+			      <span class="control-label">Searchable by Search engines</span>
+			    </label>
+			</fieldset>
+
+			<div class="field">
+		    <button type="submit" class="button">Submit</button>
+		    <button type="reset" class="button">Reset</button>
+		  </div>
+		</form>
+	</main>
+</body>
+</html>
